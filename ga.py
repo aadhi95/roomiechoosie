@@ -46,8 +46,11 @@ class generation:
         for val in self.chromelist:
             val.calc_fitness(self.stulist)
             sum=sum+val.fitness
-        self.fit=sum/len(self.chromelist)
-        ##print(self.fit)
+        for val in self.mainlist:
+            val.calc_fitness(self.stulist)
+            sum = sum + val.fitness
+        self.fit=sum/(len(self.chromelist)+len(self.mainlist))
+        print(self.fit)
         
     ## FUNCTION FOR GENERATING THE INITIAL CHROMOSOMES
     def setinitstate(self):
@@ -70,11 +73,9 @@ class generation:
     def crossover(self):
         chlist1=list(self.chromelist)
         chlist=[]
-        count=0
         chlist1.sort(key=lambda x: x.fitness, reverse=False)
         for ch in chlist1:
             if ch.fitness < 1:
-                count+=1
                 self.mainlist.append(ch)
                 chlist1.remove(ch)
         prev=0
@@ -120,6 +121,9 @@ g1=generation()
 g1.generate_data()
 g1.setinitstate()
 wb = xlwt.Workbook()
+wb1=xlwt.Workbook()
+wb1.add_sheet("test1")
+c_sh1=wb1.get_sheet(0)
 wb.add_sheet("init")
 c_sh=wb.get_sheet(0)
 for m in range(len(g1.mainlist)):
@@ -131,9 +135,11 @@ for m in range(len(g1.chromelist)):
         c_sh.write(len(g1.mainlist)+m, n, g1.chromelist[m].p[n])
     c_sh.write(len(g1.mainlist)+m, g1.stuperroom + 1, str(g1.chromelist[m].fitness))
 c_sh.write(len(g1.chromelist)+1,0,str(g1.fit))
+c_sh1.write(0,0,str(len(g1.mainlist)))
+c_sh1.write(0,1,str(g1.fit))
 sheetno=1
 for j in range(10):
-    for i in range(10):
+    for i in range(100):
         g2 = generation()
         a = g1.crossover()
         g2.stulist = list(g1.stulist)
@@ -143,6 +149,8 @@ for j in range(10):
         g1 = g2
         wb.add_sheet("Generation "+str(j)+","+str(i))
         c_sh = wb.get_sheet(sheetno)
+        c_sh1.write(sheetno, 0, str(len(g2.mainlist)))
+        c_sh1.write(sheetno, 1, str(g2.fit))
         sheetno=sheetno+1
         for m in range(len(g2.mainlist)):
             for n in range(g2.stuperroom):
@@ -154,6 +162,7 @@ for j in range(10):
             c_sh.write(len(g2.mainlist)+m, g1.stuperroom + 1, str(g2.chromelist[m].fitness))
         ##print(g2.fit)
         c_sh.write(len(g2.mainlist)+len(g2.chromelist)+1,0,str(g2.fit))
-wb.save("ga.xls")
 
+wb.save("ga.xls")
+wb1.save("rate.xls")
 
