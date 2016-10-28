@@ -1,3 +1,6 @@
+import datetime
+import multiprocessing as mp
+import os
 import random
 import statistics as sta
 
@@ -119,26 +122,26 @@ class generation:
         return pocross
 
 
-## WRITE THE DRIVER CODE AFTER THIS COMMENT
-for u in range(50):
-    g1 = generation()
-    g1.generate_data()
-    g1.setinitstate()
-    wb = xlwt.Workbook()
-    wb1 = xlwt.Workbook()
-    wb1.create_sheet(title="test1")
-    c_sh1 = wb1["test1"]
-    wb.create_sheet(title="init")
-    c_sh = wb["init"]
-    for m in range(1, len(g1.chromelist) + 1):
-        for n in range(1, g1.stuperroom + 1):
-            c_sh.cell(row=len(g1.mainlist) + m, column=n, value=g1.chromelist[m - 1].p[n - 1])
-        c_sh.cell(row=len(g1.mainlist) + m, column=g1.stuperroom + 1, value=g1.chromelist[m - 1].fitness)
-    c_sh.cell(row=len(g1.chromelist) + 1, column=1, value=g1.fit)
-    sheetno = 1
-    for j in range(10):
-        for i in range(300):
-            print(u, ",", (j * 100) + i)
+## THIS IS THE DRIVER PROGRAM , THIS IS IMPLEMENTED AS FUNCTION TO HELP WITH THREADING
+def driver(b):
+    for u in range(1):
+        g1 = generation()
+        g1.generate_data()
+        g1.setinitstate()
+        wb = xlwt.Workbook()
+        wb1 = xlwt.Workbook()
+        wb1.create_sheet(title="test1")
+        c_sh1 = wb1["test1"]
+        wb.create_sheet(title="init")
+        c_sh = wb["init"]
+        for m in range(1, len(g1.chromelist) + 1):
+            for n in range(1, g1.stuperroom + 1):
+                c_sh.cell(row=len(g1.mainlist) + m, column=n, value=g1.chromelist[m - 1].p[n - 1])
+            c_sh.cell(row=len(g1.mainlist) + m, column=g1.stuperroom + 1, value=g1.chromelist[m - 1].fitness)
+        c_sh.cell(row=len(g1.chromelist) + 1, column=1, value=g1.fit)
+        sheetno = 1
+        for i in range(b):
+            print(u, ",", i, ",pid:", os.getpid())
             g2 = generation()
             a = g1.crossover()
             g2.stulist = list(g1.stulist)
@@ -161,6 +164,13 @@ for u in range(50):
                 c_sh.cell(row=len(g2.mainlist) + m, column=g1.stuperroom + 1, value=g2.chromelist[m - 1].fitness)
             ##print(g2.fit)
             c_sh.cell(row=len(g2.mainlist) + len(g2.chromelist) + 1, column=1, value=g2.fit)
+        wb.save("ga" + str(os.getpid()) + str(datetime.datetime.now().time().hour) + str(
+            datetime.datetime.now().time().minute) + str(datetime.datetime.now().time().second) + ".xlsx")
+        wb1.save("rate" + str(os.getpid()) + str(datetime.datetime.now().time().hour) + str(
+            datetime.datetime.now().time().minute) + str(datetime.datetime.now().time().second) + ".xlsx")
 
-    wb.save("ga" + str(u) + ".xlsx")
-    wb1.save("xls files.xlsx")
+
+##THREADING PROGRAM OPTIMISED FOR DUAL CORE
+if __name__ == '__main__':
+    with mp.Pool(processes=4) as pool:
+        pool.map(driver, [2, 4, 5, 2, 3, 5, 6, 6, 6])
