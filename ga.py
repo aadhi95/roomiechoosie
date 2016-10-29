@@ -171,11 +171,16 @@ def driver(a, b):
             datetime.datetime.now().time().minute) + str(datetime.datetime.now().time().second) + ".xlsx")
 
 
+def make_iterab(a, b, c):
+    li = []
+    for i in range(c):
+        li.append((a, b))
+    return li
 ##MULTIPROCESSING CODE
 if __name__ == '__main__':
     starttime = time.time()
     with mp.Pool(processes=4) as pool:
-        r = pool.starmap_async(driver, [(5, 3), (5, 3), (5, 3), (5, 3), (5, 3), (5, 3), (5, 3), (5, 3)])
+        r = pool.starmap_async(driver, make_iterab(1, 1000, 8))
         print("STARTED")
         r.wait()
         print("DONE")
