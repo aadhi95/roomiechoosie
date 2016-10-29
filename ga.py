@@ -3,6 +3,7 @@ import multiprocessing as mp
 import os
 import random
 import statistics as sta
+import time
 
 import openpyxl as xlwt
 
@@ -123,8 +124,8 @@ class generation:
 
 
 ## THIS IS THE DRIVER PROGRAM , THIS IS IMPLEMENTED AS FUNCTION TO HELP WITH THREADING
-def driver(b):
-    for u in range(1):
+def driver(a, b):
+    for u in range(a):
         g1 = generation()
         g1.generate_data()
         g1.setinitstate()
@@ -170,7 +171,12 @@ def driver(b):
             datetime.datetime.now().time().minute) + str(datetime.datetime.now().time().second) + ".xlsx")
 
 
-##THREADING PROGRAM OPTIMISED FOR DUAL CORE
+##MULTIPROCESSING CODE
 if __name__ == '__main__':
+    starttime = time.time()
     with mp.Pool(processes=4) as pool:
-        pool.map(driver, [2, 4, 5, 2, 3, 5, 6, 6, 6])
+        r = pool.starmap_async(driver, [(5, 3), (5, 3), (5, 3), (5, 3), (5, 3), (5, 3), (5, 3), (5, 3)])
+        print("STARTED")
+        r.wait()
+        print("DONE")
+    print("time taken: ", (time.time() - starttime))
