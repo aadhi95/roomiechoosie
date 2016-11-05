@@ -12,8 +12,8 @@ class generation:
     def __init__(self):
         ## INITIALISATION VARIABLES
         self.fit = 100
-        self.totstu = 1000  ## TOTAL NUMBER OF STUDENTS
-        self.stuperroom = 5  ## STUDENTS PER ROOM
+        self.totstu = 350  ## TOTAL NUMBER OF STUDENTS
+        self.stuperroom = 4  ## STUDENTS PER ROOM
         self.stulist = []  ## MAIN ARRAY THAT STORES THE STUDENTS CHOICES
         self.li = []  ## USED FOR RANDOMLY GENERATING CHROMOSOMES
         self.chromelist = []  ## CHROMOSOME CONTAINER FOR THE GENERATION
@@ -124,63 +124,72 @@ class generation:
 
 
 ## THIS IS THE DRIVER PROGRAM , THIS IS IMPLEMENTED AS FUNCTION TO HELP WITH THREADING
-def driver(a, b):
-    for u in range(a):
-        g1 = generation()
-        g1.generate_data()
-        g1.setinitstate()
-        wb = xlwt.Workbook()
-        wb1 = xlwt.Workbook()
-        wb1.create_sheet(title="test1")
-        c_sh1 = wb1["test1"]
-        wb.create_sheet(title="init")
-        c_sh = wb["init"]
-        for m in range(1, len(g1.chromelist) + 1):
-            for n in range(1, g1.stuperroom + 1):
-                c_sh.cell(row=len(g1.mainlist) + m, column=n, value=g1.chromelist[m - 1].p[n - 1])
-            c_sh.cell(row=len(g1.mainlist) + m, column=g1.stuperroom + 1, value=g1.chromelist[m - 1].fitness)
-        c_sh.cell(row=len(g1.chromelist) + 1, column=1, value=g1.fit)
-        sheetno = 1
-        for i in range(b):
-            print(u, ",", i, ",pid:", os.getpid())
-            g2 = generation()
-            a = g1.crossover()
-            g2.stulist = list(g1.stulist)
-            g2.chromelist = a
-            g2.mainlist = g1.mainlist
-            g2.calcu_fitness()
-            g1 = g2
-            wb.create_sheet("Generation " + str(sheetno))
-            c_sh = wb["Generation " + str(sheetno)]
-            c_sh1.cell(row=sheetno, column=1, value=len(g2.mainlist))
-            c_sh1.cell(row=sheetno, column=2, value=g2.fit)
-            sheetno = sheetno + 1
-            for m in range(1, len(g2.mainlist) + 1):
-                for n in range(1, g2.stuperroom + 1):
-                    c_sh.cell(row=m, column=n, value=g2.mainlist[m - 1].p[n - 1])
-                c_sh.cell(row=m, column=g1.stuperroom + 1, value=g2.mainlist[m - 1].fitness)
-            for m in range(1, len(g2.chromelist) + 1):
-                for n in range(1, g2.stuperroom + 1):
-                    c_sh.cell(row=len(g2.mainlist) + m, column=n, value=g2.chromelist[m - 1].p[n - 1])
-                c_sh.cell(row=len(g2.mainlist) + m, column=g1.stuperroom + 1, value=g2.chromelist[m - 1].fitness)
-            ##print(g2.fit)
-            c_sh.cell(row=len(g2.mainlist) + len(g2.chromelist) + 1, column=1, value=g2.fit)
-        wb.save("ga" + str(os.getpid()) + str(datetime.datetime.now().time().hour) + str(
-            datetime.datetime.now().time().minute) + str(datetime.datetime.now().time().second) + ".xlsx")
-        wb1.save("rate" + str(os.getpid()) + str(datetime.datetime.now().time().hour) + str(
-            datetime.datetime.now().time().minute) + str(datetime.datetime.now().time().second) + ".xlsx")
+def driver(b):
+    g1 = generation()
+    g1.generate_data()
+    g1.setinitstate()
+    wb = xlwt.Workbook()
+    sh = wb["Sheet"]
+    wb1 = xlwt.Workbook()
+    for x in range(g1.totstu):
+        for z in range(len(g1.optrang)):
+            sh.cell(row=x + 1, column=z + 1, value=g1.stulist[x][z])
+    print("stulist stored")
+    wb1.create_sheet(title="test1")
+    c_sh1 = wb1["test1"]
+    wb.create_sheet(title="init")
+    c_sh = wb["init"]
+    for m in range(1, len(g1.chromelist) + 1):
+        for n in range(1, g1.stuperroom + 1):
+            c_sh.cell(row=len(g1.mainlist) + m, column=n, value=g1.chromelist[m - 1].p[n - 1])
+        c_sh.cell(row=len(g1.mainlist) + m, column=g1.stuperroom + 1, value=g1.chromelist[m - 1].fitness)
+    c_sh.cell(row=len(g1.chromelist) + 1, column=1, value=g1.fit)
+    sheetno = 1
+    for i in range(b):
+        if i % 10 == 0:
+            print(i, ",pid:", os.getpid())
+        g2 = generation()
+        a = g1.crossover()
+        g2.stulist = list(g1.stulist)
+        g2.chromelist = a
+        g2.mainlist = g1.mainlist
+        g2.calcu_fitness()
+        g1 = g2
+        wb.create_sheet("Generation " + str(sheetno))
+        c_sh = wb["Generation " + str(sheetno)]
+        c_sh1.cell(row=sheetno, column=1, value=len(g2.mainlist))
+        c_sh1.cell(row=sheetno, column=2, value=g2.fit)
+        sheetno = sheetno + 1
+        for m in range(1, len(g2.mainlist) + 1):
+            for n in range(1, g2.stuperroom + 1):
+                c_sh.cell(row=m, column=n, value=g2.mainlist[m - 1].p[n - 1])
+            c_sh.cell(row=m, column=g1.stuperroom + 1, value=g2.mainlist[m - 1].fitness)
+        for m in range(1, len(g2.chromelist) + 1):
+            for n in range(1, g2.stuperroom + 1):
+                c_sh.cell(row=len(g2.mainlist) + m, column=n, value=g2.chromelist[m - 1].p[n - 1])
+            c_sh.cell(row=len(g2.mainlist) + m, column=g1.stuperroom + 1, value=g2.chromelist[m - 1].fitness)
+        ##print(g2.fit)
+        c_sh.cell(row=len(g2.mainlist) + len(g2.chromelist) + 1, column=1, value=g2.fit)
+    wb.save("ga" + str(os.getpid()) + str(datetime.datetime.now().time().hour) + str(
+        datetime.datetime.now().time().minute) + str(datetime.datetime.now().time().second) + ".xlsx")
+    wb1.save("rate" + str(os.getpid()) + str(datetime.datetime.now().time().hour) + str(
+        datetime.datetime.now().time().minute) + str(datetime.datetime.now().time().second) + ".xlsx")
 
 
-def make_iterab(a, b, c):
+def make_iterab(a, b):
     li = []
-    for i in range(c):
-        li.append((a, b))
+    for i in range(b):
+        li.append(a)
     return li
+
 ##MULTIPROCESSING CODE
 if __name__ == '__main__':
+    noofprocess = 4  ##number of processes to use
+    noiter = 100  ## number of iterations for each scenario
+    notasks = 8  ## number of scenarios to be created best to give it as a multiple of the number of process
     starttime = time.time()
-    with mp.Pool(processes=4) as pool:
-        r = pool.starmap_async(driver, make_iterab(1, 1000, 8))
+    with mp.Pool(processes=noofprocess) as pool:
+        r = pool.map_async(driver, make_iterab(noiter, notasks))
         print("STARTED")
         r.wait()
         print("DONE")
