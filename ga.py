@@ -19,14 +19,15 @@ class generation:
         self.chromelist = []  ## CHROMOSOME CONTAINER FOR THE GENERATION
         self.optrang = [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
                         4]  ## RANGE OF CHOICES AVAILABLE TO EACH ATTRIBUTE LENGTH OF THIS LIST DECIDES THE NUMBER OF ATTRIBUTES PER STUDENT
-        self.mainlist = []
-        self.crossparam = 2
+        self.mainlist = []  ## CHROMOSOME CONTAINER FOR THE FIT CHROMOSOMES
+        self.crossparam = 2  ## DECIDES HOW MANY CHROMOSOMES MUST BE CROSSED OVER AT THE SAME TIME
+        self.threshold = 1  ## THE THRESHOLD VALUE FOR THE FIT CHROMOSOMES
 
     ## THE CHROMOSOME CLASS
     class chromo:
         def __init__(self, a):
             self.p = a  ## LIST THAT CONTAINS THE STUDENTS GROUPED TOGETHER
-            self.fitness = 100
+            self.fitness = 100  ## FITNESS OF THE CHROMOSOME
 
         def prnt(self):  ## PRINT FUNCTION
             print("persons: ", self.p, "   fitness : ", self.fitness)
@@ -84,13 +85,13 @@ class generation:
         chlist = []
         chlist1.sort(key=lambda x: x.fitness, reverse=False)
         for ch in chlist1:
-            if ch.fitness < 1:
+            if ch.fitness < self.threshold:
                 self.mainlist.append(ch)
                 chlist1.remove(ch)
         prev = 0
         ##print(len(self.mainlist))
-        for ch in chlist1:
-            ch.fitness = ((ch.fitness - chlist1[0].fitness) / (chlist1[len(chlist1) - 1].fitness - chlist1[0].fitness))
+        ##for ch in chlist1:
+        ##    ch.fitness = ((ch.fitness - chlist1[0].fitness) / (chlist1[len(chlist1) - 1].fitness - chlist1[0].fitness))
         while len(chlist1) > 0:
             select = []
             if (len(chlist1) > 1):
@@ -184,9 +185,9 @@ def make_iterab(a, b):
 
 ##MULTIPROCESSING CODE
 if __name__ == '__main__':
-    noofprocess = 1  ##number of processes to use
-    noiter = 100  ## number of iterations for each scenario
-    notasks = 8  ## number of scenarios to be created best to give it as a multiple of the number of process
+    noofprocess = 4  ##number of processes to use
+    noiter = 3000  ## number of iterations for each scenario
+    notasks = 4  ## number of scenarios to be created best to give it as a multiple of the number of process
     starttime = time.time()
     with mp.Pool(processes=noofprocess) as pool:
         r = pool.map_async(driver, make_iterab(noiter, notasks))
