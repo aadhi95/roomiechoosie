@@ -20,12 +20,13 @@ class generation:
         self.optrang = [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
                         4]  ## RANGE OF CHOICES AVAILABLE TO EACH ATTRIBUTE LENGTH OF THIS LIST DECIDES THE NUMBER OF ATTRIBUTES PER STUDENT
         self.mainlist = []
+        self.crossparam = 2
 
     ## THE CHROMOSOME CLASS
     class chromo:
         def __init__(self, a):
             self.p = a  ## LIST THAT CONTAINS THE STUDENTS GROUPED TOGETHER
-            self.fitness = 0
+            self.fitness = 100
 
         def prnt(self):  ## PRINT FUNCTION
             print("persons: ", self.p, "   fitness : ", self.fitness)
@@ -93,7 +94,7 @@ class generation:
         while len(chlist1) > 0:
             select = []
             if (len(chlist1) > 1):
-                for i in range(2):
+                for i in range(self.crossparam):
                     num = random.randrange(len(chlist1))
                     select.append(chlist1[num])
                     chlist1.pop(num)
@@ -134,7 +135,6 @@ def driver(b):
     for x in range(g1.totstu):
         for z in range(len(g1.optrang)):
             sh.cell(row=x + 1, column=z + 1, value=g1.stulist[x][z])
-    print("stulist stored")
     wb1.create_sheet(title="test1")
     c_sh1 = wb1["test1"]
     wb.create_sheet(title="init")
@@ -184,7 +184,7 @@ def make_iterab(a, b):
 
 ##MULTIPROCESSING CODE
 if __name__ == '__main__':
-    noofprocess = 4  ##number of processes to use
+    noofprocess = 1  ##number of processes to use
     noiter = 100  ## number of iterations for each scenario
     notasks = 8  ## number of scenarios to be created best to give it as a multiple of the number of process
     starttime = time.time()
